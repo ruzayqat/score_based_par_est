@@ -223,7 +223,7 @@ for l = l_min : L
     Lambda_c = calc_Lambda(l-1,Nl(l), X0_c{l}, X_c, y_c,sig,theta0, kappa);
     
     %Update Aln
-    Aln(l,:) = sum(weight_f{l} .* Lambda_f) - sum(weight_c{l} .* Lambda_c);
+    Aln(l,:) = sum(weight_f{l} .* Lambda_f - weight_c{l} .* Lambda_c);
 
     %****************
     %Set things for the next iteration on the same level and 
@@ -424,7 +424,7 @@ for n = 1:T-1
             end
 
             %estimate score function 
-            Aln(l,:) = sum(weight_f{l} .* F_f) - sum(weight_c{l} .* F_c);
+            Aln(l,:) = sum(weight_f{l} .* F_f - weight_c{l} .* F_c);
 
             %****************
             %Set things for the next iteration on the same level and 
