@@ -641,21 +641,31 @@ end
 
 
 function [In1, In2] = coupled_resampling(N, w1, w2)
-%% Coupled resampling
+% Coupled resampling
 
-alphan = sum(min(w1,w2));
+    alphan = sum(min(w1,w2));
+    if alphan == 1 %this is an error. Alpha must be less than 1.
+      display(w1)
+      display(w2)
+      error('It seems the wieghts of all particles are zero except one.\n')
+    end
 
-r = rand; %uniform random number in (0,1)
-if r < alphan % with probability alphan, do the following:
-    prob = min(w1, w2)/alphan;
-    In1 = randsample(N,N,true,prob);
-    In2 = In1;
-else % with probability 1-alphan, do the following:
-    prob = (w1 - min(w1,w2))/(1-alphan);
-    In1 = randsample(N,N,true,prob);
-    prob = (w2 - min(w1,w2))/(1-alphan);
-    In2 = randsample(N,N,true,prob);
-end
+    prob0 = min(w1, w2)/alphan;
+    prob1 = (w1 - min(w1, w2))/(1-alphan);
+    prob2 = (w2 - min(w1, w2))/(1-alphan);
+    In1 = zeros(N,1);
+    In2 = zeros(N,1);
+
+    r = rand(N,1);
+    I1 = r < alphan;
+    I2 = r >= alphan;
+    n1 = sum(I1);
+    n2 = N - n1;
+    In1(I1) = randsample(N,n1,true, prob0);
+    In2(I1) = In1(I1);
+    
+    In1(I2) = randsample(N,n2,true,prob1);
+    In2(I2) = randsample(N,n2,true,prob2);
 
 end
 
